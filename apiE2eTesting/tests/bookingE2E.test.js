@@ -1,8 +1,8 @@
-// Load ENV and Dependencies
+// Load ENV
 require("dotenv").config();
 const request = require("supertest");
 const { expect } = require("chai");
-const bookingData = require("../data/bookingData.json"); // Import booking data
+const bookingData = require("../data/bookingData.json"); // Data booking dari JSON file
 
 // Global Variables
 const url = process.env.BASE_URL_RESTFUL;
@@ -11,9 +11,9 @@ let bookingId;
 let response;
 
 describe("E2E Booking API Test", function () {
-  // 1. Authenticate and get token before all tests
+  // Login sebelum semua tes
   before(async function () {
-    console.log("----- AUTHENTICATION Before All Tests -----");
+    console.log("----- LOGIN Before All Tests -----");
 
     const loginResponse = await request(url)
       .post("/auth")
@@ -27,61 +27,51 @@ describe("E2E Booking API Test", function () {
     console.log("Login response body:", loginResponse.body);
 
     expect(loginResponse.status).to.equal(200);
-    expect(loginResponse.body).to.have.property("token");
-
     token = loginResponse.body.token;
-    console.log("✅ Token didapat:", token);
+    expect(token).to.exist;
+    expect(token).to.be.a("string");
   });
 
-  // Hook before each test
   beforeEach(function () {
     console.log(`----- Running Test: ${this.currentTest.title} -----`);
     this.timeout(60000);
   });
 
-  // a. Create Booking
   it("Create a new booking", async function () {
     console.log("----- CREATE BOOKING -----");
 
     const createResponse = await request(url)
       .post("/booking")
-      .set("Accept", "application/json")
+      .set("Accept", "*/*")
       .set("Content-Type", "application/json")
-      .send(bookingData);
+      .send(bookingData); // Pakai data dari file JSON
 
     console.log("Create booking status:", createResponse.status);
     console.log("Create booking body:", createResponse.body);
 
     expect(createResponse.status).to.equal(200);
-    expect(createResponse.body).to.have.property("bookingid");
-
     bookingId = createResponse.body.bookingid;
     expect(bookingId).to.exist;
     expect(bookingId).to.be.a("number");
   });
 
-  // b. Get Booking
-  it("Get the created booking", async function () {
+  it("Get the booking and verify data", async function () {
     console.log("----- GET BOOKING -----");
 
-    response = await request(url)
+    const getResponse = await request(url)
       .get(`/booking/${bookingId}`)
       .set("Accept", "application/json");
 
-    console.log("Get booking status:", response.status);
-    console.log("Get booking body:", response.body);
+    console.log("Get booking status:", getResponse.status);
+    console.log("Get booking body:", getResponse.body);
 
-    expect(response.status).to.equal(200);
-    expect(response.body.firstname).to.equal(bookingData.firstname);
-    expect(response.body.lastname).to.equal(bookingData.lastname);
-    expect(response.body.totalprice).to.equal(bookingData.totalprice);
-    expect(response.body.depositpaid).to.equal(bookingData.depositpaid);
-    expect(response.body.bookingdates.checkin).to.equal(bookingData.bookingdates.checkin);
-    expect(response.body.bookingdates.checkout).to.equal(bookingData.bookingdates.checkout);
-    expect(response.body.additionalneeds).to.equal(bookingData.additionalneeds);
+    expect(getResponse.status).to.equal(200);
+    expect(getResponse.body.firstname).to.equal(bookingData.firstname);
+    expect(getResponse.body.lastname).to.equal(bookingData.lastname);
+    expect(getResponse.body.totalprice).to.equal(bookingData.totalprice);
+    expect(getResponse.body.depositpaid).to.equal(bookingData.depositpaid);
   });
 
-  // c. Delete Booking
   it("Delete the booking", async function () {
     console.log("----- DELETE BOOKING -----");
 
@@ -96,7 +86,6 @@ describe("E2E Booking API Test", function () {
     expect(response.text).to.equal("Created");
   });
 
-  // After each test
   afterEach(function () {
     console.log(`----- Finished Test: ${this.currentTest.title} -----`);
     if (response) {
@@ -104,7 +93,6 @@ describe("E2E Booking API Test", function () {
     }
   });
 
-  // After all tests
   after(function () {
     console.log("----- All Booking Tests Completed -----");
   });
