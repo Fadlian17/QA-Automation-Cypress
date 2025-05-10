@@ -3,8 +3,11 @@ describe('OrangeHRM E2E Test Flow', () => {
   const employee = {
     firstName: 'Fadlian',
     lastName: 'Alfansyah',
-    username: 'fadlian.emp',
+    username: 'fadlian.employee1',
     password: 'Abcd2345',
+    firstNameAdmin: 'Fadlian',
+    lastNameAdmin: ' Alfansyah',
+    userAdmin: 'fadli.admin'
   };
 
   beforeEach(() => {
@@ -65,27 +68,40 @@ describe('OrangeHRM E2E Test Flow', () => {
   cy.screenshot('tambah-karyawan');
   });
 
-  // it('1c. Tambah User via Menu Admin', () => {
-  //   cy.loginOrangeHRM(admin.username, admin.password);
-  //   cy.contains('Admin').click();
-  //   cy.contains('Add').click();
+  it('1c. Tambah User via Menu Admin', () => {
+    cy.loginOrangeHRM(admin.username, admin.password);
+    cy.contains('Admin').click();
+    cy.contains('Add').click();
 
-  //   cy.get('.oxd-select-text').first().click();
-  //   cy.contains('ESS').click();
+    cy.get('.oxd-select-text').first().click();
+    cy.contains('ESS').click();
 
-  //   cy.get('input[placeholder="Type for hints..."]').type(`${employee.firstName} ${employee.lastName}`);
-  //   cy.get('.oxd-autocomplete-dropdown > div').first().click();
+    // Ketik nama karyawan ke autocomplete
+    cy.get('input[placeholder="Type for hints..."]')
+    .should('be.visible')
+    .type(`${employee.firstNameAdmin}`, { delay: 200 });
 
-  //   cy.get('input.oxd-input').eq(1).type(employee.username);
-  //   cy.get('.oxd-select-text').eq(1).click();
-  //   cy.contains('Enabled').click();
+    // Tunggu dropdown muncul dan pilih yang cocok
+    cy.get('.oxd-autocomplete-dropdown')
+    .should('be.visible')
+    .within(() => {
+      cy.contains(`${employee.firstNameAdmin}`)
+        .should('be.visible')
+        .click();
+    });
 
-  //   cy.get('input.oxd-input').eq(2).type(employee.password);
-  //   cy.get('input.oxd-input').eq(3).type(employee.password);
-  //   cy.get('button[type="submit"]').click();
 
-  //   cy.contains('Successfully Saved').should('exist');
-  // });
+    cy.get('input.oxd-input').eq(1).type(employee.userAdmin);
+    cy.get('.oxd-select-text').eq(1).click();
+    cy.contains('Enabled').click();
+
+    cy.get('input.oxd-input').eq(2).type(employee.password);
+    cy.get('input.oxd-input').eq(3).type(employee.password);
+    // Klik Save
+    cy.get('button[type="submit"]').should('contain.text', 'Save').click();
+    cy.screenshot('tambah-admin-user');
+
+  });
 
   // it('2. Tambah Jatah Cuti untuk Karyawan', () => {
   //   cy.loginOrangeHRM(admin.username, admin.password);
