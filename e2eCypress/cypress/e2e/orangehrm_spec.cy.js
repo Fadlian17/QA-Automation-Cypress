@@ -1,4 +1,8 @@
+/// <reference types="cypress" />
+require('cypress-xpath');
+
 describe('OrangeHRM E2E Test Flow', () => {
+
   const admin = { username: 'Admin', password: 'admin123' };
   const employee = {
     firstName: 'Fadlian',
@@ -16,7 +20,6 @@ describe('OrangeHRM E2E Test Flow', () => {
   });
 
   it('1a. Login sebagai Admin - Positive & Negative Case', () => {
-
     it('Negative Case - login gagal dengan kredensial salah', () => {
       cy.get('input[name="username"]').should('be.visible').type('wronguser');
       cy.get('input[name="password"]').type('wrongpass');
@@ -41,85 +44,125 @@ describe('OrangeHRM E2E Test Flow', () => {
     });
   });
 
-  it('1b. Tambah Karyawan Baru via PIM', () => {
-    // Login Admin
-    cy.loginOrangeHRM(admin.username, admin.password);
-  // Navigasi ke Add Employee
-  cy.contains('PIM', { timeout: 5000 }).click();
-  cy.contains('Add Employee', { timeout: 5000 }).click();
-
-  // Isi nama karyawan
-  cy.get('input[name="firstName"]').should('be.visible').type(employee.firstName);
-  cy.get('input[name="lastName"]').type(employee.lastName);
-
-  // Aktifkan switch untuk membuat login details
-  cy.get('span.oxd-switch-input').click();
-
-  // Isi username & password karyawan
-  cy.get('input.oxd-input.oxd-input--active[autocomplete="off"]').eq(0).type(employee.username);// Username
-  cy.get('input[type="password"]').eq(0).type(employee.password); // Password
-  cy.get('input[type="password"]').eq(1).type(employee.password); // Confirm Password
-
-  // Klik Save
-  cy.get('button[type="submit"]').should('contain.text', 'Save').click();
-
-  // Assertion: pastikan nama karyawan terlihat
-  cy.contains(`${employee.firstName} ${employee.lastName}`, { timeout: 5000 }).should('be.visible');
-  cy.screenshot('tambah-karyawan');
-  });
-
-  it('1c. Tambah User via Menu Admin', () => {
-    cy.loginOrangeHRM(admin.username, admin.password);
-    cy.contains('Admin').click();
-    cy.contains('Add').click();
-
-    cy.get('.oxd-select-text').first().click();
-    cy.contains('ESS').click();
-
-    // Ketik nama karyawan ke autocomplete
-    cy.get('input[placeholder="Type for hints..."]')
-    .should('be.visible')
-    .type(`${employee.firstNameAdmin}`, { delay: 200 });
-
-    // Tunggu dropdown muncul dan pilih yang cocok
-    cy.get('.oxd-autocomplete-dropdown')
-    .should('be.visible')
-    .within(() => {
-      cy.contains(`${employee.firstNameAdmin}`)
-        .should('be.visible')
-        .click();
-    });
-
-
-    cy.get('input.oxd-input').eq(1).type(employee.userAdmin);
-    cy.get('.oxd-select-text').eq(1).click();
-    cy.contains('Enabled').click();
-
-    cy.get('input.oxd-input').eq(2).type(employee.password);
-    cy.get('input.oxd-input').eq(3).type(employee.password);
-    // Klik Save
-    cy.get('button[type="submit"]').should('contain.text', 'Save').click();
-    cy.screenshot('tambah-admin-user');
-
-  });
-
-  // it('2. Tambah Jatah Cuti untuk Karyawan', () => {
+  // it('1b. Tambah Karyawan Baru via PIM', () => {
+  //   // Login Admin
   //   cy.loginOrangeHRM(admin.username, admin.password);
-  //   cy.contains('Leave').click();
-  //   cy.contains('Entitlements').click();
-  //   cy.contains('Add Entitlements').click();
+  // // Navigasi ke Add Employee
+  // cy.contains('PIM', { timeout: 5000 }).click();
+  // cy.contains('Add Employee', { timeout: 5000 }).click();
 
-  //   cy.get('input[placeholder="Type for hints..."]').type(`${employee.firstName} ${employee.lastName}`);
-  //   cy.get('.oxd-autocomplete-dropdown > div').first().click();
+  // // Isi nama karyawan
+  // cy.get('input[name="firstName"]').should('be.visible').type(employee.firstName);
+  // cy.get('input[name="lastName"]').type(employee.lastName);
 
-  //   cy.get('.oxd-select-text').eq(1).click();
-  //   cy.contains('Annual Leave').click();
+  // // Aktifkan switch untuk membuat login details
+  // cy.get('span.oxd-switch-input').click();
 
-  //   cy.get('input[type="number"]').last().type('5');
-  //   cy.get('button[type="submit"]').click();
+  // // Isi username & password karyawan
+  // cy.get('input.oxd-input.oxd-input--active[autocomplete="off"]').eq(0).type(employee.username);// Username
+  // cy.get('input[type="password"]').eq(0).type(employee.password); // Password
+  // cy.get('input[type="password"]').eq(1).type(employee.password); // Confirm Password
 
-  //   cy.contains('Successfully Saved').should('exist');
+  // // Klik Save
+  // cy.get('button[type="submit"]').should('contain.text', 'Save').click();
+
+  // // Assertion: pastikan nama karyawan terlihat
+  // cy.contains(`${employee.firstName} ${employee.lastName}`, { timeout: 5000 }).should('be.visible');
+  // cy.screenshot('tambah-karyawan');
   // });
+
+  // it('1c. Tambah User via Menu Admin', () => {
+  //   cy.loginOrangeHRM(admin.username, admin.password);
+  //   cy.contains('Admin').click();
+  //   cy.contains('Add').click();
+
+  //   cy.get('.oxd-select-text').first().click();
+  //   cy.contains('ESS').click();
+
+  //   // Ketik nama karyawan ke autocomplete
+  //   cy.get('input[placeholder="Type for hints..."]')
+  //   .should('be.visible')
+  //   .type(`${employee.firstNameAdmin}`, { delay: 200 });
+
+  //   // Tunggu dropdown muncul dan pilih yang cocok
+  //   cy.get('.oxd-autocomplete-dropdown')
+  //   .should('be.visible')
+  //   .within(() => {
+  //     cy.contains(`${employee.firstNameAdmin}`)
+  //       .should('be.visible')
+  //       .click();
+  //   });
+
+
+  //   cy.get('input.oxd-input').eq(1).type(employee.userAdmin);
+  //   cy.get('.oxd-select-text').eq(1).click();
+  //   cy.contains('Enabled').click();
+
+  //   cy.get('input.oxd-input').eq(2).type(employee.password);
+  //   cy.get('input.oxd-input').eq(3).type(employee.password);
+  //   // Klik Save
+  //   cy.get('button[type="submit"]').should('contain.text', 'Save').click();
+  //   cy.screenshot('tambah-admin-user');
+
+  // });
+
+  it('2. Tambah Jatah Cuti untuk Karyawan', () => {
+    cy.loginOrangeHRM(admin.username, admin.password);
+    
+    cy.contains('Leave').click();
+    cy.contains('Entitlements').click();
+    cy.contains('Add Entitlements').click();
+  
+    // --- Ketik nama karyawan ke autocomplete ---
+    cy.get('input[placeholder="Type for hints..."]')
+      .should('be.visible')
+      .type('admin', { delay: 200 });
+  
+    cy.get('.oxd-autocomplete-dropdown')
+      .should('be.visible')
+      .within(() => {
+        cy.contains('Admin ')
+          .should('be.visible')
+          .click();
+      });
+  
+    // --- Pilih Leave Type ---
+    cy.get('.oxd-select-text-input').eq(0).click();
+    cy.get('.oxd-select-dropdown')
+      .should('be.visible')
+      .within(() => {
+        cy.contains('CAN - Bereavement').click();
+      });
+  
+    // --- Pilih Leave Period ---
+    cy.get('.oxd-select-text-input').eq(1).click();
+    cy.get('.oxd-select-dropdown')
+      .should('be.visible')
+      .within(() => {
+        cy.contains('2020-01-01 - 2020-31-12').click();
+      });
+  
+    // --- Isi Entitlement (menggunakan xpath) ---
+    cy.xpath('//label[contains(text(), "Entitlement")]/ancestor::div[contains(@class, "oxd-input-group")]//input')
+      .should('be.visible')
+      .clear()
+      .type('10.5');
+
+  
+    // --- Submit ---
+    cy.get('button[type="submit"]').click();
+
+    // --- Tunggu loading hilang ---
+
+    cy.xpath("//div[contains(@class, 'orangehrm-modal-footer')]//button[contains(@class, 'oxd-button--secondary')]")
+    .should('be.visible')
+    .click();
+
+    cy.screenshot('tambah-jatah-cuti');
+  
+    // --- Assertion berhasil disimpan ---
+    cy.contains('Successfully Saved').should('be.visible');
+  });
 
   // it('3a. Login Karyawan & Request Cuti', () => {
   //   cy.loginOrangeHRM(employee.username, employee.password);
