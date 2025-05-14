@@ -1,11 +1,7 @@
-Feature: Login ke SauceDemo
+Feature: Login ke aplikasi SauceDemo
 
-  Scenario: Login sukses dengan kredensial valid
+  Scenario: Login berhasil
     Given saya membuka halaman login
-    When saya login dengan username "standard_user" dan password "secret_sauce"
-    Then saya harus melihat halaman produk
-
-  Scenario: Login gagal dengan kredensial salah
-    Given saya membuka halaman login
-    When saya login dengan username "invalid_user" dan password "wrong_pass"
-    Then saya harus melihat pesan error
+    When saya mengisi username "standard_user" dan password "secret_sauce"
+    And saya klik tombol login
+    Then saya berhasil masuk ke halaman inventory

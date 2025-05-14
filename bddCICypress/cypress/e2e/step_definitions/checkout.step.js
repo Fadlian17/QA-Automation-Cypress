@@ -1,3 +1,5 @@
+import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
+
 Given('saya login dan menambahkan item ke keranjang', () => {
   cy.visit('https://www.saucedemo.com/');
   cy.xpath('//input[@data-test="username"]').type('standard_user');
